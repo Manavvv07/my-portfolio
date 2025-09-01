@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { motion, useAnimation } from 'framer-motion';
+import { motion, useAnimation, Variants } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import SectionHeader from './SectionHeader';
-import { Code2, Database, Brain, Paintbrush } from 'lucide-react';
+import { Code2, Database, Brain, Paintbrush, LucideProps } from 'lucide-react';
 
+// --- Type Definitions ---
+interface Service {
+  id: number;
+  title: string;
+  description: string;
+  icon: React.ElementType<LucideProps>;
+  color: string;
+}
+
+// --- Main Component ---
 const WorkSection = ({ darkMode }: { darkMode: boolean }) => {
   const [hoveredService, setHoveredService] = useState<number | null>(null);
   const controls = useAnimation();
@@ -18,33 +28,33 @@ const WorkSection = ({ darkMode }: { darkMode: boolean }) => {
     }
   }, [controls, inView]);
 
-  const services = [
+  const services: Service[] = [
     {
       id: 1,
       title: 'Frontend Dev',
       description: 'Building modern, responsive interfaces with React and Next.js',
-      icon: <Code2 size={24} />,
+      icon: Code2,
       color: darkMode ? '#22d3ee' : '#06b6d4'
     },
     {
       id: 2,
       title: 'Backend Dev',
       description: 'Creating fast, secure APIs and database systems',
-      icon: <Database size={24} />,
+      icon: Database,
       color: darkMode ? '#f472b6' : '#ec4899'
     },
     {
       id: 3,
       title: 'Generative AI',
       description: 'Implementing AI solutions for automated applications',
-      icon: <Brain size={24} />,
+      icon: Brain,
       color: darkMode ? '#a78bfa' : '#8b5cf6'
     },
     {
       id: 4,
       title: 'Design To Code',
       description: 'Converting Figma designs into exact code replicas',
-      icon: <Paintbrush size={24} />,
+      icon: Paintbrush,
       color: darkMode ? '#fb923c' : '#f97316'
     },
   ];
@@ -72,7 +82,7 @@ const WorkSection = ({ darkMode }: { darkMode: boolean }) => {
         />
         <svg className="absolute top-0 left-0 w-full h-full opacity-50" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <pattern id="grid-work" width="40" height="40" patternUnits="userSpaceOnUse">
               <path
                 d="M 40 0 L 0 0 0 40"
                 fill="none"
@@ -81,7 +91,7 @@ const WorkSection = ({ darkMode }: { darkMode: boolean }) => {
               />
             </pattern>
           </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
+          <rect width="100%" height="100%" fill="url(#grid-work)" />
         </svg>
       </div>
 
@@ -94,12 +104,11 @@ const WorkSection = ({ darkMode }: { darkMode: boolean }) => {
           className="grid grid-cols-1 gap-6 md:gap-8 lg:gap-12 sm:grid-cols-2 lg:grid-cols-4"
           variants={containerVariants}
         >
-          {services.map((service, index) => (
+          {services.map((service) => (
             <ServiceCard
               key={service.id}
               service={service}
               darkMode={darkMode}
-              index={index}
               isHovered={hoveredService === service.id}
               setHoveredService={setHoveredService}
             />
@@ -107,14 +116,15 @@ const WorkSection = ({ darkMode }: { darkMode: boolean }) => {
         </motion.div>
       </div>
 
-      {/* Refined Gradient Orbs - matching Hero style */}
+      {/* Refined Gradient Orbs */}
       <div className="absolute -top-20 -right-10 sm:-top-40 sm:-right-20 w-64 sm:w-96 h-64 sm:h-96 rounded-full blur-[80px] sm:blur-[120px] bg-blue-500/10 animate-pulse-slow" />
       <div className="absolute -bottom-20 -left-10 sm:-bottom-40 sm:-left-20 w-64 sm:w-96 h-64 sm:h-96 rounded-full blur-[80px] sm:blur-[120px] bg-purple-500/10 animate-pulse-slow" />
     </motion.section>
   );
 };
 
-const sectionVariants = {
+// --- Animation Variants ---
+const sectionVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -125,7 +135,7 @@ const sectionVariants = {
   }
 };
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -135,7 +145,7 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { y: 20, opacity: 0 },
   visible: {
     y: 0,
@@ -148,10 +158,10 @@ const itemVariants = {
   }
 };
 
+// --- Sub-Components ---
 const ServiceCard = ({ service, darkMode, isHovered, setHoveredService }: {
-  service: any,
+  service: Service,
   darkMode: boolean,
-  index: number,
   isHovered: boolean,
   setHoveredService: React.Dispatch<React.SetStateAction<number | null>>
 }) => (
@@ -176,14 +186,18 @@ const ServiceCard = ({ service, darkMode, isHovered, setHoveredService }: {
   >
     <Icon icon={service.icon} color={service.color} isHovered={isHovered} />
     <motion.h3
-      className={`text-xl sm:text-2xl font-semibold text-center ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}
+      initial="hidden"
+      animate="visible"
       variants={textVariants}
+      className={`text-xl sm:text-2xl font-semibold text-center ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}
     >
       {service.title}
     </motion.h3>
     <motion.p
-      className={`text-base sm:text-lg text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}
+      initial="hidden"
+      animate="visible"
       variants={textVariants}
+      className={`text-base sm:text-lg text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}
     >
       {service.description}
     </motion.p>
@@ -191,7 +205,8 @@ const ServiceCard = ({ service, darkMode, isHovered, setHoveredService }: {
   </motion.div>
 );
 
-const Icon = ({ icon, color, isHovered }: { icon: React.ReactNode, color: string, isHovered: boolean }) => {
+const Icon = ({ icon: IconComponent, color, isHovered }: { icon: React.ElementType, color: string, isHovered: boolean }) => {
+  const size = typeof window !== 'undefined' && window.innerWidth < 640 ? 24 : 28;
   return (
     <motion.div
       className="flex justify-center items-center w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl backdrop-blur-sm"
@@ -207,14 +222,12 @@ const Icon = ({ icon, color, isHovered }: { icon: React.ReactNode, color: string
         transition: { type: "spring", stiffness: 300, damping: 10 }
       }}
     >
-      {React.cloneElement(icon as React.ReactElement<any>, {
-        size: typeof window !== 'undefined' && window.innerWidth < 640 ? 24 : 28
-      })}
+      <IconComponent size={size} />
     </motion.div>
   );
 };
 
-const textVariants = {
+const textVariants: Variants = {
   hidden: { opacity: 0, y: 10 },
   visible: {
     opacity: 1,
