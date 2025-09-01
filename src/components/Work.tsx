@@ -158,6 +158,16 @@ const itemVariants: Variants = {
   }
 };
 
+// --- Corrected textVariants: Transition is removed from the variant object ---
+const textVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+  }
+};
+
+
 // --- Sub-Components ---
 const ServiceCard = ({ service, darkMode, isHovered, setHoveredService }: {
   service: Service,
@@ -185,10 +195,12 @@ const ServiceCard = ({ service, darkMode, isHovered, setHoveredService }: {
     }}
   >
     <Icon icon={service.icon} color={service.color} isHovered={isHovered} />
+    {/* --- The transition is now a direct prop on the motion component --- */}
     <motion.h3
       initial="hidden"
       animate="visible"
       variants={textVariants}
+      transition={{ type: "spring", stiffness: 100, damping: 10 }}
       className={`text-xl sm:text-2xl font-semibold text-center ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}
     >
       {service.title}
@@ -197,6 +209,7 @@ const ServiceCard = ({ service, darkMode, isHovered, setHoveredService }: {
       initial="hidden"
       animate="visible"
       variants={textVariants}
+      transition={{ type: "spring", stiffness: 100, damping: 10 }}
       className={`text-base sm:text-lg text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}
     >
       {service.description}
@@ -225,15 +238,6 @@ const Icon = ({ icon: IconComponent, color, isHovered }: { icon: React.ElementTy
       <IconComponent size={size} />
     </motion.div>
   );
-};
-
-const textVariants: Variants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 100, damping: 10 }
-  }
 };
 
 const Particles = ({ color }: { color: string }) => {
